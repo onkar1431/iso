@@ -10,68 +10,30 @@ import Grid from "@material-ui/core/Grid";
 import IconButton from '@material-ui/core/IconButton';
 import InputBase from '@material-ui/core/InputBase';
 import Paper from '@material-ui/core/Paper';
-import { makeStyles } from "@material-ui/core/styles";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import MenuIcon from '@material-ui/icons/Menu';
 import CameraIcon from "@material-ui/icons/PhotoCamera";
 import SearchIcon from '@material-ui/icons/Search';
 import React from "react";
+import useStyles from "./data/config";
 import courses from "./data/mock-data";
-
-const useStyles = makeStyles((theme) => ({
-  icon: {
-    marginRight: theme.spacing(2),
-  },
-  heroContent: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(8, 0, 6),
-  },
-  cardGrid: {
-    paddingTop: theme.spacing(8),
-    paddingBottom: theme.spacing(8),
-  },
-  card: {
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-  },
-  cardMedia: {
-    paddingTop: "56.25%", // 16:9
-    backgroundSize: "contain",
-  },
-  cardContent: {
-    flexGrow: 1,
-  },
-  footer: {
-    backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(6),
-  },
-  authorName: {
-    textAlign: "end",
-  },
-  root: {
-    padding: '2px 4px',
-    display: 'flex',
-    alignItems: 'center',
-  },
-  input: {
-    marginLeft: theme.spacing(1),
-    flex: 1,
-  },
-  iconButton: {
-    padding: 10,
-  },
-  divider: {
-    height: 28,
-    margin: 4,
-  },
-}));
-
-const cards = courses[0].lessons;
 
 export default function Album() {
   const classes = useStyles();
+  const [courseList, setCourseList] = React.useState(courses[0].lessons);
+  const [filteredCourses, setFilteredCourses] = React.useState([]);
+  const filterCourses = (event) => {
+    setFilteredCourses(courseList.filter((item) => item.name === event.target.value));
+  }
+
+  React.useEffect(() => {
+    if (filteredCourses.length > 0) {
+      setCourseList(filteredCourses);
+    } else {
+      setCourseList(courses[0].lessons);
+    }
+  }, [filteredCourses])
 
   return (
     <>
@@ -104,6 +66,7 @@ export default function Album() {
                 className={classes.input}
                 placeholder="Search Courses"
                 inputProps={{ 'aria-label': 'search courses' }}
+                onChange={filterCourses}
               />
               <SearchIcon />
             </Paper>
@@ -111,7 +74,7 @@ export default function Album() {
         </div>
         <Container className={classes.cardGrid} maxWidth="md">
           <Grid container spacing={4}>
-            {cards.map((card, index) => (
+            {courseList.map((card, index) => (
               <Grid item key={index} xs={12} sm={6} md={4}>
                 <Card className={classes.card}>
                   <CardMedia
